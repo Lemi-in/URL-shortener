@@ -5,7 +5,8 @@ const api = import.meta.env.VITE_API_BASE;
 function App() {
   const [originalUrl, setOriginalUrl] = useState('');
   const [shortUrl, setShortUrl] = useState('');
-  const [darkMode, setDarkMode] = useState(true);
+  const [darkMode, setDarkMode] = useState(true); 
+  const [copied, setCopied] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,6 +18,12 @@ function App() {
 
     const data = await res.json();
     setShortUrl(data.shortUrl || '');
+  };
+
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(shortUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   const toggleDarkMode = () => setDarkMode(!darkMode);
@@ -112,6 +119,7 @@ function App() {
         </form>
 
         {shortUrl && (
+          
           <div
             style={{
               marginTop: '1.5rem',
@@ -119,15 +127,29 @@ function App() {
               color: darkMode ? '#6ee7b7' : '#10b981',
             }}
           >
-            <p>Short URL:</p>
-            <a
-              href={shortUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ fontWeight: 'bold', color: 'inherit' }}
-            >
+        {shortUrl && (
+          <div style={{ marginTop: '1rem' }}>
+            <strong>Short URL:</strong>{' '}
+            <a href={shortUrl} target="_blank" rel="noopener noreferrer">
               {shortUrl}
-            </a>
+            </a>{' '}
+            <button
+              onClick={handleCopy}
+              style={{
+                marginLeft: '0.5rem',
+                padding: '0.3rem 0.8rem',
+                color: '#fff',
+                backgroundColor: copied ? '#10b981' : '#3b82f6',
+                border: 'none',
+                borderRadius: '0.5rem',
+                cursor: 'pointer',
+              }}
+            >
+              {copied ? 'Copied!' : 'Copy'}
+            </button>
+          </div>
+        )}
+
           </div>
         )}
       </div>
